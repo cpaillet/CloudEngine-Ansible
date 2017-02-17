@@ -276,13 +276,13 @@ class Hardware(FactsBase):
             self.facts['flash_total'] = re.findall(r'(.*) total', data)[0].replace(",", "")
             self.facts['flash_free'] = re.findall(r'total \((.*) free\)', data)[0].replace(",", "")
 
-        data = self.runner.get_command('display memory')
-        if data:
-            memory_total = re.findall(r'Total Memory Used: (.*) Kbytes', data)[0]
-            use_percent = re.findall(r'Memory Using Percentage: (.*)%', data)[0]
-            memory_free = str(int(memory_total) - int(memory_total) * int(use_percent) / 100)
-            self.facts['memory_total'] = memory_total + " Kb"
-            self.facts['memory_free'] = memory_free + " Kb"
+        #data = self.runner.get_command('display memory')
+        #if data:
+        #    memory_total = re.findall(r'Total Memory Used Is: (.*) Kbytes', data)[0]
+        #    use_percent = re.findall(r'Memory Using Percentage: (.*)%', data)[0]
+        #    memory_free = str(int(memory_total) - int(memory_total) * int(use_percent) / 100)
+        #    self.facts['memory_total'] = memory_total + " Kb"
+        #    self.facts['memory_free'] = memory_free + " Kb"
 
         data = self.runner.get_command('display device')
         if data:
