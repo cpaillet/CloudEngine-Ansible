@@ -303,6 +303,7 @@ class Interfaces(FactsBase):
         """ Commands method """
 
         add_command(self.runner, 'display interface brief')
+        add_command(self.runner, 'display interface description')
 
         try:
             add_command(self.runner, 'display ip interface brief')
@@ -322,6 +323,25 @@ class Interfaces(FactsBase):
         interface_dict = dict()
         ipv4_addr_dict = dict()
         neighbors_dict = dict()
+        ansible_net_neighbors = dict()
+        ansible_net_interfaces = dict()
+
+        data = self.runner.get_command('display interface description')
+        if data:
+            interface_info = data.split("\n")
+            tmp_interface = interface_info[9:]
+            previous_interface = ""
+            for item in tmp_interface:
+                tmp_item = item.split()
+                if len(tmp_item) == 1:
+                    ansible_net_interfaces[previous_interface]["description"] +=  tmp_item[0]
+                else:
+                    ansible_net_interfaces[tmp_item[0]] = dict()
+                    ansible_net_interfaces[tmp_item[0]]["lineprotocol"] = tmp_item[1]
+                    ansible_net_interfaces[tmp_item[0]]["operstatus"] = tmp_item[2]
+                    ansible_net_interfaces[tmp_item[0]]["description"] = tmp_item[3]
+                    previous_interface = tmp_item[0]
+            self.facts['ansible_net_interfaces'] = ansible_net_interfaces
 
         data = self.runner.get_command('display interface brief')
         if data:
@@ -350,7 +370,11 @@ class Interfaces(FactsBase):
                 for item in tmp_neighbors:
                     tmp_item = item.split()
                     neighbors_dict[tmp_item[0]] = tmp_item[3]
+                    ansible_net_neighbors[tmp_item[0]] = dict()
+                    ansible_net_neighbors[tmp_item[0]]["host"] =  tmp_item[1]
+                    ansible_net_neighbors[tmp_item[0]]["port"] =  tmp_item[2]
                 self.facts['neighbors'] = neighbors_dict
+                self.facts['ansible_net_neighbors'] = ansible_net_neighbors
 
 
 FACT_SUBSETS = dict(
